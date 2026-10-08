@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lịch âm dương - Ngày công</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--tx:#1f2328;--mu:#6b7280;--bd:#e3e1da;--ac:#1d6fb8;--sat:#c2740a;--sun:#c0392b;--tod:#e8f1fb;--off:#fbeaea;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17181a;--card:#222426;--tx:#ecebe7;--mu:#9aa0a6;--bd:#34373a;--ac:#5aa8ee;--sat:#e8a04a;--sun:#ef6f62;--tod:#1c3045;--off:#3a2323}}
+:root[data-theme="dark"]{--bg:#17181a;--card:#222426;--tx:#ecebe7;--mu:#9aa0a6;--bd:#34373a;--ac:#5aa8ee;--sat:#e8a04a;--sun:#ef6f62;--tod:#1c3045;--off:#3a2323}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+.wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:20px;align-items:start}
+.left{min-width:0}
+.right{min-width:0;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+.right .range{justify-content:flex-start}
+.right .sum{margin-top:0}
+.right .note{margin-top:12px;padding:0 2px}
+.note ul{margin:0;padding-left:18px}
+.note li{margin-bottom:6px}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr);max-width:560px}.right{position:static}}
+.head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.head h1{flex:1;text-align:center;font-size:20px;margin:0}
+.head .sub{display:block;font-size:12px;color:var(--mu);font-weight:400;margin-top:2px}
+button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--ac)}
+.nav{font-size:18px;line-height:1;width:44px;height:40px;padding:0}
+.expbar{display:flex;justify-content:center;margin-top:16px}
+.tools{flex-wrap:wrap;display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+select{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 8px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow{text-align:center;font-size:12px;font-weight:600;color:var(--mu);padding:4px 0}
+.dow.s{color:var(--sat)}.dow.c{color:var(--sun)}
+.cell{background:var(--card);border:1px solid var(--bd);border-radius:10px;min-height:62px;padding:5px 3px;text-align:center;cursor:pointer;user-select:none}
+.cell.empty{background:transparent;border-color:transparent;cursor:default}
+.cell .d{font-size:18px;font-weight:600}
+.cell .l{font-size:11px;color:var(--mu);margin-top:2px}
+.cell .l.first{color:var(--ac);font-weight:600}
+.cell.sat{background:#e4e4e4;border-color:#cfcfcf}
+.cell.sun{background:#facc15;border-color:#facc15}
+.cell.hol{background:#c0392b;border-color:#c0392b}
+.cell.sun .d,.cell.sun .l,.cell.sun .w,.cell.sun .l.first,.cell.sat .d,.cell.sat .l,.cell.sat .w,.cell.sat .l.first{color:#000}
+.cell.hol .d,.cell.hol .l,.cell.hol .w,.cell.hol .l.first{color:#fff}
+.cell.today{outline:3px solid #e60000;outline-offset:1px}
+.range{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:12px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;font-size:14px}
+.cell.out{opacity:.3}
+.cell.pick{opacity:1;box-shadow:inset 0 0 0 3px var(--ac)}
+.grid{-webkit-user-select:none;user-select:none}
+.range{display:block}
+.rtop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.rhint{font-size:12px;color:var(--mu);margin-top:6px}
+.rsel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;font-size:14px}
+.right .sum{margin-top:10px}
+button:disabled{opacity:.45;cursor:default}
+.cell.hol .w{font-weight:600}
+.cell.off{border-style:dashed}
+.cell.off:not(.sat):not(.sun):not(.hol){background:var(--off)}
+.cell.off .d{text-decoration:line-through}
+.cell .w{font-size:10px;color:var(--mu)}
+.sum{margin-top:14px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.row{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;border-bottom:1px solid var(--bd)}
+.row:last-child{border:0}
+.row b{font-variant-numeric:tabular-nums}
+.big{font-size:16px}.big b{color:var(--ac);font-size:20px}
+.note{font-size:13px;color:var(--mu);margin-top:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="left">
+  <div class="head">
+    <button class="nav" id="prev" aria-label="Tháng trước">&#9664;</button>
+    <h1 id="title"></h1>
+    <button class="nav" id="next" aria-label="Tháng sau">&#9654;</button>
+  </div>
+  <div class="tools">
+    <select id="selM"></select>
+    <select id="selY"></select>
+    <button id="today">Hôm nay</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="expbar" data-nocap="1"><span id="exp" data-nocap="1" style="display:none;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap"><button id="btnPng">📷 Chụp ảnh</button><button id="btnPdf">📄 Xuất PDF</button><span id="expMsg" style="flex-basis:100%;text-align:center;font-size:12px;color:var(--mu);min-height:0"></span></span></div>
+ </div>
+ <div class="right">
+  <div class="range">
+    <div class="rtop"><b id="rlabel"></b><span><button id="undo">Hoàn tác</button> <button id="full">Cả tháng (đặt lại)</button></span></div>
+    <div class="rhint">Quét chuột trái từ ô đầu đến ô cuối để tính công cho khoảng đó. Bấm 1 ô để đánh dấu nghỉ.</div>
+  </div>
+  <div class="rsel"><span>Hoặc chọn nhanh: từ ngày</span><select id="selFrom"></select><span>đến ngày</span><select id="selTo"></select></div>
+  <div class="sum" id="sum"></div>
+  <div class="note"><ul>
+    <li>Quy tắc: Thứ 2–6 tính 1 công/ngày, Thứ 7 tính ½ công, Chủ nhật nghỉ.</li>
+    <li>Quét chuột trái từ ô đầu đến ô cuối để tính công cho khoảng đó (mặc định cả tháng; đổi tháng thì tự về cả tháng).</li>
+    <li>Có thể chọn nhanh bằng ô "từ ngày … đến ngày …".</li>
+    <li>Hai nút Chụp ảnh (PNG) và Xuất PDF lưu lại toàn bộ lịch cùng bảng tổng hợp đang hiển thị; sẽ có hộp thoại xác nhận trước khi lưu file.</li>
+    <li>Chọn nhầm thì bấm Hoàn tác hoặc nhấn Esc khi đang quét để hủy.</li>
+    <li>Nút Cả tháng (đặt lại) đưa về mặc định: tính cả tháng và khôi phục các ô đã bấm nghỉ trong tháng đó.</li>
+    <li>Bấm 1 ô trong khoảng để đánh dấu nghỉ (không tính công) và xem công thực tế; dữ liệu đánh dấu không được lưu khi tải lại trang.</li>
+    <li>Ngày nghỉ lễ hưởng nguyên lương (nền đỏ, nhãn "Lễ"): Tết Dương lịch 1/1, Tết Nguyên đán 16–20/2/2026, Giỗ Tổ 26/4 (nghỉ bù 27/4/2026), 30/4, 1/5, Quốc khánh 1/9 và 2/9.</li>
+    <li>Ngày lễ cố định áp dụng mọi năm; Tết và Giỗ Tổ chỉ cài cho năm 2026.</li>
+  </ul></div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ===== Thuật toán âm lịch (Hồ Ngọc Đức), múi giờ UTC+7 =====
+var TZ=7,PI=Math.PI;
+function jdFromDate(dd,mm,yy){var a=Math.floor((14-mm)/12),y=yy+4800-a,m=mm+12*a-3;var jd=dd+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;if(jd<2299161)jd=dd+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-32083;return jd}
+function newMoon(k){var T=k/1236.85,T2=T*T,T3=T2*T,dr=PI/180;var J=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3;J+=0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);var M=359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3;var Mp=306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3;var F=21.2964+390.67050646*k-0.0016528*T2-0.00000239*T3;var C=(0.1734-0.000393*T)*Math.sin(M*dr)+0.0021*Math.sin(2*dr*M)-0.4068*Math.sin(Mp*dr)+0.0161*Math.sin(dr*2*Mp)-0.0004*Math.sin(dr*3*Mp)+0.0104*Math.sin(dr*2*F)-0.0051*Math.sin(dr*(M+Mp))-0.0074*Math.sin(dr*(M-Mp))+0.0004*Math.sin(dr*(2*F+M))-0.0004*Math.sin(dr*(2*F-M))-0.0006*Math.sin(dr*(2*F+Mp))+0.0010*Math.sin(dr*(2*F-Mp))+0.0005*Math.sin(dr*(2*Mp+M));var dt=T<-11?0.001+0.000839*T+0.0002261*T2-0.00000845*T3-0.000000081*T*T3:-0.000278+0.000265*T+0.000262*T2;return J+C-dt}
+function sunLong(jdn){var T=(jdn-2451545.0)/36525,T2=T*T,dr=PI/180;var M=357.52910+35999.05030*T-0.0001559*T2-0.00000048*T*T2;var L0=280.46645+36000.76983*T+0.0003032*T2;var DL=(1.914600-0.004817*T-0.000014*T2)*Math.sin(dr*M)+(0.019993-0.000101*T)*Math.sin(dr*2*M)+0.000290*Math.sin(dr*3*M);var L=(L0+DL)*dr;L-=PI*2*Math.floor(L/(PI*2));return L}
+function nmDay(k){return Math.floor(newMoon(k)+0.5+TZ/24)}
+function sl(d){return Math.floor(sunLong(d-0.5-TZ/24)/PI*6)}
+function lm11(yy){var off=jdFromDate(31,12,yy)-2415021;var k=Math.floor(off/29.530588853);var nm=nmDay(k);if(sl(nm)>=9)nm=nmDay(k-1);return nm}
+function leapOff(a11){var k=Math.floor((a11-2415021.076998695)/29.530588853+0.5);var last=0,i=1,arc=sl(nmDay(k+i));do{last=arc;i++;arc=sl(nmDay(k+i))}while(arc!=last&&i<14);return i-1}
+function solar2lunar(dd,mm,yy){var dn=jdFromDate(dd,mm,yy);var k=Math.floor((dn-2415021.076998695)/29.530588853);var ms=nmDay(k+1);if(ms>dn)ms=nmDay(k);var a11=lm11(yy),b11=a11,ly;if(a11>=ms){ly=yy;a11=lm11(yy-1)}else{ly=yy+1;b11=lm11(yy+1)}var ld=dn-ms+1;var diff=Math.floor((ms-a11)/29);var leap=0,lmo=diff+11;if(b11-a11>365){var lo=leapOff(a11);if(diff>=lo){lmo=diff+10;if(diff==lo)leap=1}}if(lmo>12)lmo-=12;if(lmo>=11&&diff<4)ly-=1;return{d:ld,m:lmo,y:ly,leap:leap}}
+
+// ===== Giao diện =====
+var CAN=["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"],CHI=["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
+function canChi(y){return CAN[(y+6)%10]+" "+CHI[(y+8)%12]}
+var now=new Date(),tY=now.getFullYear(),tM=now.getMonth()+1,tD=now.getDate();
+var cy=tY,cm=tM,off={},rf=null,rt=null,prevR=null,drag=null;
+// Ngày nghỉ lễ hưởng nguyên lương (Điều 112 Bộ luật Lao động 2019)
+var HOL_FIX={"1/1":"Tết Dương lịch","30/4":"Ngày Chiến thắng","1/5":"Quốc tế Lao động","1/9":"Quốc khánh","2/9":"Quốc khánh"};
+var HOL_Y={2026:{"16/2":"Tết Nguyên đán (29 Tết)","17/2":"Tết Nguyên đán (mùng 1)","18/2":"Tết Nguyên đán (mùng 2)","19/2":"Tết Nguyên đán (mùng 3)","20/2":"Tết Nguyên đán (mùng 4)","26/4":"Giỗ Tổ Hùng Vương (10/3 âm lịch)","27/4":"Nghỉ bù Giỗ Tổ Hùng Vương"}};
+function holName(d,m,y){var k=d+"/"+m;return HOL_FIX[k]||(HOL_Y[y]&&HOL_Y[y][k])||""}
+var $=function(i){return document.getElementById(i)};
+var selM=$("selM"),selY=$("selY");
+for(var i=1;i<=12;i++){selM.innerHTML+='<option value="'+i+'">Tháng '+i+'</option>'}
+for(var y=2000;y<=2100;y++){selY.innerHTML+='<option value="'+y+'">'+y+'</option>'}
+function key(d){return cy+"-"+cm+"-"+d}
+function render(){
+  selM.value=cm;selY.value=cy;
+  var dim=new Date(cy,cm,0).getDate();
+  var from=rf==null?1:Math.min(Math.max(rf,1),dim),to=rt==null?dim:Math.min(Math.max(rt,1),dim);
+  var opts="";for(var q=1;q<=dim;q++)opts+='<option value="'+q+'">'+q+'</option>';
+  $("selFrom").innerHTML=opts;$("selTo").innerHTML=opts;
+  $("selFrom").value=from;$("selTo").value=to;
+  $("rlabel").textContent=(from>to)?"Khoảng ngày không hợp lệ":"Đang tính: ngày "+from+" – "+to+" / "+cm+(from==1&&to==dim?" (cả tháng)":"");
+  $("undo").disabled=!prevR;
+  var bad=from>to;
+  var first=(new Date(cy,cm-1,1).getDay()+6)%7; // Thứ 2 = 0
+  var l1=solar2lunar(1,cm,cy),lN=solar2lunar(dim,cm,cy);
+  $("title").innerHTML="Tháng "+cm+" / "+cy+'<span class="sub">Âm lịch: tháng '+l1.m+(l1.leap?" nhuận":"")+(l1.m!==lN.m||l1.leap!==lN.leap?" – "+lN.m+(lN.leap?" nhuận":""):"")+" năm "+canChi(lN.y)+"</span>";
+  var h="";["T2","T3","T4","T5","T6","T7","CN"].forEach(function(n,i){h+='<div class="dow'+(i==5?" s":i==6?" c":"")+'">'+n+'</div>'});
+  for(var i=0;i<first;i++)h+='<div class="cell empty"></div>';
+  var full=0,half=0,sun=0,offFull=0,offHalf=0,holW=0,holN=0,nd=0;
+  for(var d=1;d<=dim;d++){
+    var wd=(first+d-1)%7,lu=solar2lunar(d,cm,cy);
+    var cls="cell"+(wd==5?" sat":wd==6?" sun":"");
+    if(cy==tY&&cm==tM&&d==tD)cls+=" today";
+    var inR=!bad&&d>=from&&d<=to;
+    if(!inR)cls+=" out";
+    var w=wd<5?1:wd==5?0.5:0;
+    var hn=holName(d,cm,cy),isHol=!!hn;
+    if(isHol)cls+=" hol";
+    var isOff=!isHol&&off[key(d)]&&w>0;
+    if(isOff)cls+=" off";
+    if(inR){
+      nd++;
+      if(wd<5)full++;else if(wd==5)half++;else sun++;
+      if(isHol){holN++;holW+=w}
+      if(isOff){if(wd<5)offFull++;else offHalf++}
+    }
+    var lt=lu.d==1?lu.d+"/"+lu.m+(lu.leap?"N":""):lu.d;
+    h+='<div class="'+cls+'" data-d="'+d+'" title="'+hn+'"><div class="d">'+d+'</div><div class="l'+(lu.d==1?" first":"")+'">'+lt+'</div><div class="w">'+(isHol?"Lễ":w==1?"1":w==.5?"½":"nghỉ")+'</div></div>';
+  }
+  $("grid").innerHTML=h;
+  if(bad){$("sum").innerHTML='<div class="row"><span>Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.</span></div>';return}
+  var std=full+half*0.5,act=std-holW-offFull-offHalf*0.5;
+  var whole=(from==1&&to==dim);
+  $("sum").innerHTML=
+   '<div class="row"><span>Khoảng tính</span><b>'+(whole?"Cả tháng ":"")+from+'/'+cm+' – '+to+'/'+cm+'/'+cy+'</b></div>'+
+   '<div class="row"><span>Tổng số ngày trong khoảng</span><b>'+nd+'</b></div>'+
+   '<div class="row"><span>Thứ 2 – Thứ 6 (1 công)</span><b>'+full+' ngày</b></div>'+
+   '<div class="row"><span>Thứ 7 (½ công)</span><b>'+half+' ngày = '+(half*0.5)+' công</b></div>'+
+   '<div class="row"><span>Chủ nhật (nghỉ)</span><b>'+sun+' ngày</b></div>'+
+   '<div class="row big"><span>Công chuẩn '+(whole?"của tháng":"trong khoảng")+'</span><b>'+std+'</b></div>'+
+   (holN?'<div class="row"><span>Ngày nghỉ lễ ('+holN+' ngày)</span><b>−'+holW+' công</b></div>':'')+
+   ((offFull+offHalf)?'<div class="row"><span>Ngày nghỉ đã đánh dấu</span><b>−'+(offFull+offHalf*0.5)+' công</b></div>':'')+
+   ((holN||offFull+offHalf)?'<div class="row big"><span>Công đi làm thực tế</span><b>'+act+'</b></div>':'');
+}
+function go(dm){rf=rt=null;prevR=null;cm+=dm;if(cm<1){cm=12;cy--}if(cm>12){cm=1;cy++}if(cy<2000){cy=2000;cm=1}if(cy>2100){cy=2100;cm=12}render()}
+$("prev").onclick=function(){go(-1)};
+$("next").onclick=function(){go(1)};
+$("today").onclick=function(){cy=tY;cm=tM;rf=rt=null;prevR=null;render()};
+selM.onchange=function(){cm=+selM.value;rf=rt=null;prevR=null;render()};
+selY.onchange=function(){cy=+selY.value;rf=rt=null;prevR=null;render()};
+$("selFrom").onchange=function(){prevR={a:rf,b:rt};rf=+this.value;render()};
+$("selTo").onchange=function(){prevR={a:rf,b:rt};rt=+this.value;render()};
+$("full").onclick=function(){
+  prevR={a:rf,b:rt,o:Object.assign({},off)};
+  rf=rt=null;
+  var pre=cy+"-"+cm+"-";Object.keys(off).forEach(function(k){if(k.indexOf(pre)===0)delete off[k]});
+  render()};
+$("undo").onclick=function(){if(!prevR)return;var t={a:rf,b:rt,o:prevR.o?Object.assign({},off):null};rf=prevR.a;rt=prevR.b;if(prevR.o)off=prevR.o;prevR=t;render()};
+function cellOf(e){var c=e.target.closest(".cell");return(c&&!c.classList.contains("empty"))?c:null}
+function preview(){var a=Math.min(drag.s,drag.e),b=Math.max(drag.s,drag.e);var cs=$("grid").querySelectorAll(".cell[data-d]");for(var i=0;i<cs.length;i++){var d=+cs[i].dataset.d;cs[i].classList.toggle("pick",d>=a&&d<=b)}}
+$("grid").onmousedown=function(e){if(e.button!==0)return;var c=cellOf(e);if(!c)return;e.preventDefault();drag={s:+c.dataset.d,e:+c.dataset.d};preview()};
+$("grid").onmouseover=function(e){if(!drag)return;var c=cellOf(e);if(!c)return;var d=+c.dataset.d;if(d!==drag.e){drag.e=d;preview()}};
+document.addEventListener("mouseup",function(){
+  if(!drag)return;var dr=drag;drag=null;
+  if(dr.s===dr.e){var el=$("grid").querySelector('.cell[data-d="'+dr.s+'"]');if(el&&!el.classList.contains("out")){var k=key(dr.s);if(off[k])delete off[k];else off[k]=1}}
+  else{prevR={a:rf,b:rt};rf=Math.min(dr.s,dr.e);rt=Math.max(dr.s,dr.e)}
+  render();
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&drag){drag=null;render()}});
+render();
+
+// ===== Chụp ảnh / xuất PDF (cần quyền downloads) =====
+var DL=null;
+function expName(ext){return"lich-ngay-cong-"+(cm<10?"0":"")+cm+"-"+cy+"."+ext}
+function msg(t){$("expMsg").textContent=t||""}
+function capture(){
+  if(typeof html2canvas==="undefined")return Promise.reject({message:"Chưa tải được thư viện chụp ảnh."});
+  return html2canvas(document.querySelector(".wrap"),{scale:2,backgroundColor:getComputedStyle(document.body).backgroundColor,ignoreElements:function(el){return el.hasAttribute&&el.hasAttribute("data-nocap")}});
+}
+function withHeader(cap){
+  var sc=2,hh=96*sc,cs=getComputedStyle(document.body);
+  var c=document.createElement("canvas");c.width=cap.width;c.height=cap.height+hh;
+  var x=c.getContext("2d");
+  x.fillStyle=cs.backgroundColor;x.fillRect(0,0,c.width,c.height);
+  x.fillStyle=cs.color;x.textAlign="center";x.textBaseline="alphabetic";
+  var ff='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  x.font="bold "+(30*sc)+"px "+ff;
+  x.fillText("BẢNG TÍNH NGÀY CÔNG – THÁNG "+cm+" / "+cy,c.width/2,52*sc);
+  x.font=(15*sc)+"px "+ff;x.fillStyle=getComputedStyle(document.documentElement).getPropertyValue("--mu")||cs.color;
+  x.fillText($("rlabel").textContent,c.width/2,80*sc);
+  x.drawImage(cap,0,hh);
+  return c;
+}
+function toBlob(canvas){return new Promise(function(res,rej){canvas.toBlob(function(b){b?res(b):rej({message:"Không tạo được ảnh."})},"image/png")})}
+function saveErr(e){msg(e&&e.code==="declined"?"Đã hủy lưu file.":"Không lưu được: "+((e&&e.message)||"lỗi không xác định"))}
+function busy(on){$("btnPng").disabled=on;$("btnPdf").disabled=on}
+$("btnPng").onclick=function(){
+  busy(true);msg("Đang tạo ảnh…");
+  capture().then(withHeader).then(toBlob).then(function(b){return DL.save({filename:expName("png"),data:b})})
+   .then(function(){msg("Đã lưu ảnh.")}).catch(saveErr).then(function(){busy(false)});
+};
+$("btnPdf").onclick=function(){
+  busy(true);msg("Đang tạo PDF…");
+  capture().then(withHeader).then(function(canvas){
+    var J=window.jspdf&&window.jspdf.jsPDF;if(!J)throw{message:"Chưa tải được thư viện PDF."};
+    var land=canvas.width>=canvas.height;
+    var doc=new J({orientation:land?"landscape":"portrait",unit:"mm",format:"a4"});
+    var pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight(),m=8;
+    var r=Math.min((pw-2*m)/canvas.width,(ph-2*m)/canvas.height),w=canvas.width*r,h=canvas.height*r;
+    doc.addImage(canvas.toDataURL("image/jpeg",0.95),"JPEG",(pw-w)/2,m,w,h);
+    return doc.output("blob");
+  }).then(function(b){return DL.save({filename:expName("pdf"),data:b})})
+   .then(function(){msg("Đã lưu PDF.")}).catch(saveErr).then(function(){busy(false)});
+};
+if(window.claude&&window.claude.use){window.claude.use("downloads").then(function(d){if(d){DL=d;$("exp").style.display="inline-flex"}}).catch(function(){})}
+</script>
+</body>
+</html>
